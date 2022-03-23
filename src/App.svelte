@@ -1,15 +1,30 @@
 <script lang="ts">
-  import { runCmd } from './main'
+  import { invoke } from '@tauri-apps/api'
 
-  let n = 1
+  export function popup(msg: string) {
+    invoke('error_popup', { msg })
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export async function runCmd<T = any>(cmd: string, options: { [key: string]: any } = {}) {
+    return (await invoke(cmd, options).catch((msg) => {
+      popup(msg)
+      throw msg
+    })) as T
+  }
+
   async function create() {
-    await runCmd('create_child_window', { id: 'child-' + n })
-    n++
+    await runCmd('create_child_window')
+  }
+  create()
+  function click(e: Event) {
+    console.log(e.type, e)
   }
 </script>
 
+<svelte:window on:mouseover={click} on:mousedown={click} on:mouseup={click} on:focus={click} />
+
 <div>Tetragrade</div>
-<button on:click={create}>Create child window {n}</button>
 
 <style lang="sass">
   :global(body)
