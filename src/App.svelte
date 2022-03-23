@@ -1,11 +1,21 @@
-<h1>Tetragrade</h1>
+<script lang="ts">
+  import { runCmd } from './main'
+
+  let n = 1
+  async function create() {
+    await runCmd('create_child_window', { id: 'child-' + n })
+    n++
+  }
+</script>
+
+<div>Tetragrade</div>
+<button on:click={create}>Create child window {n}</button>
 
 <style lang="sass">
   :global(body)
-    margin: 100px 0px
     font-family: Arial, Helvetica, sans-serif
     font-size: 18px
-    background-color: #111318
-    color: #f2f2f2
+    background-color: #efe2d2
+    color: #302012
     text-align: center
 </style>

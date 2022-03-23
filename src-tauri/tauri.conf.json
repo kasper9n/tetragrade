@@ -55,6 +55,9 @@
     "allowlist": {
       "shell": {
         "open": true
+      },
+      "dialog": {
+        "message": true
       }
     },
     "security": {

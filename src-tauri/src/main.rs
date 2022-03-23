@@ -3,16 +3,32 @@
   windows_subsystem = "windows"
 )]
 
-use tauri::api::shell;
+use std::thread;
+
+use tauri::api::{dialog, shell};
 use tauri::{
-  CustomMenuItem, Manager, Menu, MenuEntry, MenuItem, Submenu, WindowBuilder, WindowUrl,
+  command, CustomMenuItem, Manager, Menu, MenuEntry, MenuItem, Submenu, Window, WindowBuilder,
+  WindowUrl,
 };
+
+mod commands;
+
+#[command]
+fn error_popup(msg: String, win: Window) {
+  println!("Error: {}", msg);
+  thread::spawn(move || {
+    dialog::message(Some(&win), "Error", msg);
+  });
+}
 
 fn main() {
   let ctx = tauri::generate_context!();
 
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![])
+    .invoke_handler(tauri::generate_handler![
+      error_popup,
+      commands::create_child_window
+    ])
     .create_window("main", WindowUrl::default(), |win, webview| {
       let win = win
         .title("Tetragrade")
@@ -25,6 +41,7 @@ fn main() {
         .fullscreen(false);
       return (win, webview);
     })
+    .unwrap()
     .menu(Menu::with_items([
       #[cfg(target_os = "macos")]
       MenuEntry::Submenu(Submenu::new(
