@@ -1,5 +1,7 @@
 # Tetragrade
 
+Supposed to be a Ferdi-like app built with Tauri
+
 ## Dev instructions
 
 ### Get started
