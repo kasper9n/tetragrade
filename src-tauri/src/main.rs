@@ -7,8 +7,8 @@ use std::thread;
 
 use tauri::api::{dialog, shell};
 use tauri::{
-  command, CustomMenuItem, Manager, Menu, MenuEntry, MenuItem, Submenu, Window, WindowBuilder,
-  WindowUrl,
+  command, AboutMetadata, CustomMenuItem, Manager, Menu, MenuEntry, MenuItem, Submenu, Window,
+  WindowBuilder, WindowUrl,
 };
 
 mod commands;
@@ -29,25 +29,21 @@ fn main() {
       error_popup,
       commands::create_child_window
     ])
-    .create_window("main", WindowUrl::default(), |win, webview| {
-      let win = win
+    .setup(|app| {
+      let _window = WindowBuilder::new(app, "main", WindowUrl::default())
         .title("Tetragrade")
-        .resizable(true)
-        .decorations(true)
-        .always_on_top(false)
         .inner_size(800.0, 550.0)
         .min_inner_size(400.0, 200.0)
-        .skip_taskbar(false)
-        .fullscreen(false);
-      return (win, webview);
+        .build()
+        .expect("Unable to create window");
+      Ok(())
     })
-    .unwrap()
     .menu(Menu::with_items([
       #[cfg(target_os = "macos")]
       MenuEntry::Submenu(Submenu::new(
         &ctx.package_info().name,
         Menu::with_items([
-          MenuItem::About(ctx.package_info().name.clone()).into(),
+          MenuItem::About(ctx.package_info().name.clone(), AboutMetadata::default()).into(),
           MenuItem::Separator.into(),
           MenuItem::Services.into(),
           MenuItem::Separator.into(),
